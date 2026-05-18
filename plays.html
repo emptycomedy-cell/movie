@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plays</title>
+    <link rel="stylesheet" href="Plays.css">
+    <link rel="stylesheet" href="../fontawesome-free-6.7.2-web/css/all.min.css">
+</head>
+<body>
+     <header>
+        <div class="logo">BookMyShow</div>
+        <nav>
+            <a href="movie.html">Movies</a>
+            <a href="stream.html">Stream</a>
+            <a href="event.html">Events</a>
+            <a href="plays.html">Plays</a>
+            <a href="Sport.html">Sports</a>
+            <a href="#">Activities</a>
+        </nav>
+        <div class="user-actions">
+            <div class="location-selector-container">
+                <div class="location-selected" id="location-selector-btn">
+                    <span id="current-location">Coimbatore</span>
+                    <i class="fas fa-caret-down"></i>
+                </div>
+                <div class="location-dropdown" id="location-dropdown-content">
+                    <input type="text" placeholder="Search for your city" class="city-search-input">
+                    <p class="popular-cities-title">Popular Cities</p>
+                    <ul>
+                        <li><a href="#" data-city="Mumbai">Mumbai</a></li>
+                        <li><a href="#" data-city="Delhi-NCR">Delhi-NCR</a></li>
+                        <li><a href="#" data-city="Bengaluru">Bengaluru</a></li>
+                        <li><a href="#" data-city="Hyderabad">Hyderabad</a></li>
+                        <li><a href="#" data-city="Chennai">Chennai</a></li>
+                        <li><a href="#" data-city="Pune">Pune</a></li>
+                    </ul>
+                    <a href="#" class="view-all-cities">View All Cities</a>
+                </div>
+            </div>
+            <button class="signin-btn" id="signin-btn">Sign In</button>
+        </div>
+
+        <div id="signin-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" id="close-modal-btn">×</span>
+                <h2>Get Started</h2>
+                <button class="social-login google"><i class="fab fa-google"></i> Continue with Google</button>
+                <button class="social-login email-login"><i class="fas fa-envelope"></i> Continue with Email</button>
+                <button class="social-login apple-login"><i class="fab fa-apple"></i> Continue with Apple</button>
+                <div class="or-divider">OR</div>
+                <div class="mobile-login">
+                    <select class="country-code">
+                        <option value="+91">🇮🇳 +91</option>
+                    </select>
+                    <input type="tel" placeholder="Continue with mobile number">
+                </div>
+                <p class="terms">I agree to the <a href="#">Terms & Conditions</a> & <a href="#">Privacy Policy</a></p>
+            </div>
+        </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+
+                const locationSelectorBtn = document.getElementById('location-selector-btn');
+                const locationDropdownContent = document.getElementById('location-dropdown-content');
+                const currentLocationSpan = document.getElementById('current-location');
+                const cityLinks = locationDropdownContent.querySelectorAll('ul li a');
+
+                if (locationSelectorBtn && locationDropdownContent) {
+                    locationSelectorBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        locationDropdownContent.classList.toggle('active');
+                    });
+
+
+                    cityLinks.forEach(link => {
+                        link.addEventListener('click', function (event) {
+                            event.preventDefault();
+                            const selectedCity = this.dataset.city;
+                            if (currentLocationSpan) {
+                                currentLocationSpan.textContent = selectedCity;
+                            }
+                            locationDropdownContent.classList.remove('active');
+                        });
+                    });
+
+                    document.addEventListener('click', (event) => {
+                        if (locationDropdownContent.classList.contains('active') &&
+                            !locationSelectorBtn.contains(event.target) &&
+                            !locationDropdownContent.contains(event.target)) {
+                            locationDropdownContent.classList.remove('active');
+                        }
+                    });
+                }
+
+
+
+                const signinBtn = document.getElementById('signin-btn');
+                const signinModal = document.getElementById('signin-modal');
+                const closeModalBtn = document.getElementById('close-modal-btn');
+
+                if (signinBtn && signinModal && closeModalBtn) {
+                    signinBtn.addEventListener('click', () => {
+                        signinModal.classList.add('active');
+                    });
+
+                    closeModalBtn.addEventListener('click', () => {
+                        signinModal.classList.remove('active');
+                    });
+
+
+                    signinModal.addEventListener('click', (event) => {
+                        if (event.target === signinModal) {
+                            signinModal.classList.remove('active');
+                        }
+                    });
+                }
+
+
+                const searchBar = document.getElementById('search-bar');
+                if (searchBar) {
+                    searchBar.addEventListener('keypress', (event) => {
+                        if (event.key === 'Enter') {
+                            console.log('Searching for:', searchBar.value);
+
+                            searchBar.value = '';
+                        }
+                    });
+                }
+            });
+        </script>
+    </header>
+
+    <div class="container">
+        <h2>Plays Club in Nagercoil</h2>
+        <div class="event-grid">
+            <div class="event-card">
+                <a href="plays1.html" class="event-card-link">
+                    <div class="event-card-image-container">
+                        <img src="https://i.postimg.cc/G2NxxT8q/ff-1.png" alt="Survivor's Guilt" class="event-card-image">
+                        <div class="event-card-date">1 hr</div>
+                    </div>
+                    <div class="event-card-content">
+                        <h3 class="event-title">Elite Sports Club</h3>
+                        <p class="event-venue">Vetturimadam</p>
+                        <p class="event-category">Amman Kovil Street</p>
+                        <p class="event-price">₹ 70 </p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="event-card">
+                <a href="plays2.html" class="event-card-link">
+                    <div class="event-card-image-container">
+                        <img src="https://i.postimg.cc/FKdMrNxk/ready.jpg" alt="8 by Praveen Kumar" class="event-card-image">
+                        <div class="event-card-date">1 hr</div>
+                    </div>
+                    <div class="event-card-content">
+                        <h3 class="event-title">Rambo Circus</h3>
+                        <p class="event-venue">Nagercoil</p>
+                        <p class="event-category">2nd Floor,F-Block,Appta Market</p>
+                        <p class="event-price">₹ 90 </p>
+                    </div>
+                </a>
+            </div>
+
+
+        </div>
+    </div>
+            <footer>
+        <div class="footer-links">
+            <div>24/7 CUSTOMER CARE</div>
+            <div>RESEND BOOKING CONFIRMATION</div>
+            <div>SUBSCRIBE TO THE NEWSLETTER</div>
+        </div>
+        <p>© 2025 BookMyShow Inspired by Movie ticket booking </p>
+    </footer>
+
+    <script src="Plays.js"></script>
+</body>
+</html>

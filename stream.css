@@ -1,0 +1,786 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; 
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    overflow-x: hidden;
+    font-size: 14px;
+}
+
+       a {
+            text-decoration: none;
+            color: #dc3545;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        header {
+            background-color: #ffffff;
+            color: #1c1e21;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 40px;
+        }
+
+        header .logo {
+            font-size: 1.7em;
+            font-weight: 700;
+            color: #dc3545;
+        }
+
+        header nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        header nav a {
+            color: #4b4f56;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: color 0.2s;
+        }
+
+        header nav a:hover,
+        header nav a.active {
+            color: #dc3545;
+            text-decoration: none;
+        }
+
+        .location-selector-container {
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .location-selected {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .location-selected:hover {
+            background-color: #f0f0f0;
+        }
+
+        .location-selected i {
+            margin-left: 5px;
+        }
+
+        .location-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            width: 280px;
+            padding: 15px;
+        }
+
+        .location-dropdown.active {
+            display: block;
+        }
+
+        .city-search-input {
+            width: calc(100% - 20px);
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .popular-cities-title {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .location-dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 10px 0;
+        }
+
+        .location-dropdown ul li a {
+            display: block;
+            padding: 8px 0;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .location-dropdown ul li a:hover {
+            color: #f84464;
+        }
+
+        .view-all-cities {
+            display: block;
+            text-align: center;
+            color: #f84464;
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .signin-btn {
+            background-color: #f84464;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .signin-btn:hover {
+            background-color: #d1324f;
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333545;
+            padding: 0 20px;
+            height: 40px;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        .main-nav ul li a {
+            color: #ccc;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav ul li a:hover {
+            color: white;
+        }
+
+        .nav-links-right li a {
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 25px 30px;
+            border-radius: 8px;
+            width: 360px;
+            max-width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            text-align: center;
+        }
+
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .social-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .social-login i {
+            margin-right: 10px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .social-login.google i {
+            color: #DB4437;
+        }
+
+        .social-login.email-login i {
+            color: #777;
+        }
+
+        .social-login.apple-login i {
+            color: #000;
+        }
+
+
+        .or-divider {
+            margin: 20px 0;
+            font-size: 12px;
+            color: #777;
+            text-transform: uppercase;
+            position: relative;
+            text-align: center;
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            display: block;
+            width: 40%;
+            height: 1px;
+            background-color: #ddd;
+            position: absolute;
+            top: 50%;
+        }
+
+        .or-divider::before {
+            left: 0;
+        }
+
+        .or-divider::after {
+            right: 0;
+        }
+
+
+        .mobile-login {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .country-code {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            background-color: #f9f9f9;
+            font-size: 14px;
+        }
+
+        .mobile-login input[type="tel"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
+        }
+
+        .terms {
+            font-size: 11px;
+            color: #777;
+            margin-top: 15px;
+        }
+
+        .terms a {
+            color: #f84464;
+            text-decoration: none;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-actions .location {
+            font-weight: 500;
+            color: #4b4f56;
+            cursor: pointer;
+        }
+
+        .user-actions .location .dropdown-arrow {
+            font-size: 0.8em;
+            margin-left: 4px;
+            color: #8a8d91;
+        }
+
+        .sign-in {
+            background-color: #dc3545;
+            color: white;
+            padding: 9px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+
+        .sign-in:hover {
+            background-color: #c82333;
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+        }
+                footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #343a40;
+            color: #adb5bd;
+            margin-top: 50px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+        }
+
+        .footer-links div {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .footer-links div:hover {
+            color: #f8f9fa;
+        }
+
+        footer p {
+            font-size: 0.85em;
+        }
+
+.hamburger-menu {
+    font-size: 24px;
+    cursor: pointer;
+    display: none;
+}
+
+.hero-section {
+    position: relative;
+    height: 600px;
+    color: white;
+    overflow: hidden;
+}
+
+.hero-carousel-container-css {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.hero-slide-item {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    animation: cssHeroFade 15s infinite; 
+    box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.3);
+}
+
+.hero-slide-item:nth-child(1) { animation-delay: 0s; }
+.hero-slide-item:nth-child(2) { animation-delay: 5s; }
+.hero-slide-item:nth-child(3) { animation-delay: 10s; }
+
+
+@keyframes cssHeroFade {
+    0% { opacity: 0; }
+    16.66% { opacity: 1; } 
+    33.33% { opacity: 1; }
+    50% { opacity: 0; } 
+    100% { opacity: 0; }
+}
+
+
+.hero-slide-content {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1100px;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 50px;
+    position: relative; 
+    z-index: 2;
+}
+
+.hero-movie-poster {
+    width: 220px;
+    height: auto;
+    border-radius: 8px;
+    margin-right: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.hero-movie-details .premiere-tag {
+    background-color: #f84464;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.hero-movie-details .tagline {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #f0f0f0;
+}
+
+.hero-movie-details h1 {
+    font-size: 36px;
+    margin: 0 0 10px;
+    font-weight: 700;
+}
+
+.hero-movie-details .info,
+.hero-movie-details .language {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #e0e0e0;
+}
+
+.hero-movie-details .synopsis {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ccc;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.hero-dots-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    z-index: 10;
+}
+
+.hero-dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    margin: 0 5px;
+    transition: background-color 0.3s;
+}
+
+.hero-dot.active {
+    background-color: white;
+}
+
+.video-library-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(30, 30, 30, 0.8);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.video-library-btn:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+}
+.video-library-icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.content-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.content-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.scrollable-movies-container {
+    position: relative;
+}
+
+.movies-wrapper {
+    display: flex;
+    overflow-x: auto; 
+    padding-bottom: 15px;
+    scroll-behavior: smooth; 
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.movies-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.movie-card {
+    flex: 0 0 auto;
+    width: 180px;
+    margin-right: 20px;
+    background-color: rgb(42, 42, 42);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    color: white;
+}
+.movie-card:hover {
+    transform: translateY(-5px) scale(1.03); 
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.movie-card-poster-link {
+    display: block;
+    position: relative;
+}
+
+.movie-card-poster {
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+    display: block;
+}
+
+.movie-card-info {
+    padding: 10px;
+}
+
+.movie-card-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-card-language {
+    font-size: 12px;
+    color: #ececec;
+    margin: 0 0 8px;
+}
+
+.movie-card-tag {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.movie-card-tag.premiere {
+    background-color: #f84464;
+    color: white;
+}
+
+.movie-card-tag.preview {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(237, 130, 27, 0.9), rgba(237, 130, 27, 0));
+    color: white;
+    text-align: center;
+    padding: 10px 0 5px;
+    font-size: 14px;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.login-modal {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    width: 380px;
+    max-width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.close-login-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.login-modal h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.social-login-btn, .mobile-login-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: white;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 500;
+    text-align: left;
+    padding-left: 20px;
+    transition: background-color 0.2s ease;
+}
+.social-login-btn:hover, .mobile-login-btn:hover {
+    background-color: #f9f9f9;
+}
+
+.social-login-btn.google { border-color: #db4437; color: #db4437; }
+.social-login-btn.email { border-color: #777; color: #555; }
+.social-login-btn.apple { border-color: #000; color: #000; }
+
+.or-separator {
+    margin: 20px 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.flag-icon {
+    margin-right: 8px;
+}
+
+.terms-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 25px;
+}
+.terms-text a {
+    color: #f84464;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .main-nav { display: none; }
+    .hamburger-menu { display: block; }
+    .header-container { padding: 0 15px; }
+    .hero-section { height: 450px; }
+    .hero-slide-content { flex-direction: column; align-items: center; text-align: center; margin-top: 20px; padding: 15px;}
+    .hero-movie-poster { margin-right: 0; margin-bottom: 15px; width: 180px; }
+    .hero-movie-details h1 { font-size: 28px; }
+    .hero-movie-details .synopsis { font-size: 13px; max-height: 80px; }
+
+    .content-section { padding: 0 10px; }
+    .content-section h2 { font-size: 20px; margin-left: 10px; }
+    
+    .scrollable-movies-container { padding: 0 10px; }
+    .movies-wrapper { padding-left: 5px; }
+    .movie-card { width: 150px; margin-right: 15px;}
+    .movie-card-poster { height: 225px; }
+
+    .login-modal { width: 90%; padding: 20px; }
+}
+
+@media (max-width: 480px) {
+    .logo { font-size: 20px; }
+    .sign-in-btn { padding: 6px 10px; font-size: 13px; }
+    .hero-section { height: 400px; }
+    .hero-movie-poster { width: 150px; }
+    .hero-movie-details h1 { font-size: 24px; }
+    .hero-dots-container { bottom: 10px; }
+    .hero-dot { width: 8px; height: 8px; }
+    .video-library-btn { font-size: 13px; padding: 8px 12px; top: 15px; right: 15px;}
+    .movie-card { width: 130px; }
+    .movie-card-poster { height: 195px; }
+    .movie-card-title { font-size: 14px; }
+}

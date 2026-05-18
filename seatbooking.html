@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Seat Booking Widget with Payment</title>
+    <style>
+        :root {
+            --seat-available-bg: #4a4e69;
+            --seat-selected-bg: red;
+            --seat-occupied-bg: #f0f0f0;
+            --screen-bg: #ccf6ff;
+            --text-color: #333;
+            --widget-bg: #fff;
+            --widget-border: #ddd;
+            --accent-color-text: red;
+            --body-bg: #e9ebee;
+            --button-primary-bg: #c72929; 
+            --button-primary-hover-bg: #c52b2b;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .booking-widget {
+            background-color: var(--widget-bg);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            padding: 25px;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .widget-header {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .movie-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f7f7f7;
+            padding: 8px 12px;
+            border-radius: 5px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .movie-selector label {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .movie-selector select {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9em;
+            padding: 6px 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .showcase {
+            list-style-type: none;
+            display: flex;
+            justify-content: space-around;
+            background-color: #f7f7f7;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .showcase li {
+            display: flex;
+            align-items: center;
+            margin: 0 5px;
+        }
+
+        .showcase li .seat-legend {
+            height: 15px;
+            width: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        .showcase li .seat-legend.available { background-color: var(--seat-available-bg); }
+        .showcase li .seat-legend.selected { background-color: var(--seat-selected-bg); }
+        .showcase li .seat-legend.occupied { background-color: var(--seat-occupied-bg); }
+
+        .showcase li small {
+            font-size: 0.8em;
+        }
+
+        .widget-seats {
+            perspective: 800px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .screen {
+            background-color: var(--screen-bg);
+            color: #555;
+            font-weight: bold;
+            height: 50px;
+            width: 85%;
+            max-width: 320px;
+            margin: 15px 0 20px 0;
+            transform: rotateX(-40deg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            text-align: center;
+            line-height: 50px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .seating-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .seat {
+            background-color: var(--seat-available-bg);
+            height: 16px;
+            width: 20px;
+            margin: 3px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            transition: transform 0.15s ease-out, background-color 0.15s ease-out;
+        }
+
+        .seat.selected {
+            background-color: var(--seat-selected-bg);
+            transform: scale(1.1);
+        }
+
+        .seat.occupied {
+            background-color: var(--seat-occupied-bg);
+            cursor: not-allowed;
+        }
+
+        .seat:not(.occupied):hover {
+            cursor: pointer;
+            transform: scale(1.15);
+            background-color: #606586;
+        }
+        .seat:not(.occupied).selected:hover {
+            background-color: var(--seat-selected-bg);
+            transform: scale(1.1);
+        }
+
+        .seat:nth-of-type(2) { margin-right: 15px; }
+        .seat:nth-last-of-type(2) { margin-left: 15px; }
+
+        .widget-summary {
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-radius: 5px;
+            width: 100%;
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 20px; 
+        }
+
+        .widget-summary span {
+            color: var(--accent-color-text);
+            font-weight: bold;
+        }
+
+        .payment-button-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #proceed-to-payment-btn {
+            background-color: var(--button-primary-bg);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #proceed-to-payment-btn:hover {
+            background-color: var(--button-primary-hover-bg);
+            transform: translateY(-2px);
+        }
+        #proceed-to-payment-btn:active {
+            transform: translateY(0px) scale(0.98);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        #proceed-to-payment-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .payment-modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: var(--modal-overlay-bg);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .payment-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 25px 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+            transform: translateY(-20px) scale(0.95);
+            transition: transform 0.3s ease-out, opacity 0.3s ease-in-out;
+        }
+        .payment-modal.show .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .modal-content p {
+            margin-bottom: 20px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        .modal-content .pay-now-btn {
+            background-color: var(--button-primary-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .modal-content .pay-now-btn:hover {
+            background-color: var(--button-primary-hover-bg);
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--accent-color-text);
+            animation: spin 1s ease infinite;
+            margin: 20px auto;
+        }
+        #movie{
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .payment-success { color: green; font-weight: bold; }
+        .payment-failure { color: red; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+    
+
+    <div class="booking-widget">
+        <div class="widget-header">
+            <div class="movie-selector">
+                <label for="movie">Movie:</label>
+                <select id="movie">
+                    <option value="10">Good Bad Ugly (₹100)</option>
+                    <option value="12">Thunderbolts* (₹100)</option>
+                    <option value="8">Veera Dheera Sooran (₹100)</option>
+                    <option value="9">Sachein(₹100)</option>
+                </select>
+            </div>
+            <ul class="showcase">
+                <li><div class="seat-legend available"></div><small>Available</small></li>
+                <li><div class="seat-legend selected"></div><small>Selected</small></li>
+                <li><div class="seat-legend occupied"></div><small>Occupied</small></li>
+            </ul>
+        </div>
+
+        <div class="widget-seats">
+            <div class="screen">SCREEN</div>
+            <div class="seating-area">
+            </div>
+        </div>
+
+        <div class="widget-summary">
+            <p>Selected: <span id="count">0</span> | Total: ₹<span id="total">0</span></p>
+        </div>
+
+        <div class="payment-button-container">
+            <button id="proceed-to-payment-btn">Proceed to Payment</button>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="payment-modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalBtn">×</span>
+            <div id="modalBody">
+                <h2>Confirm Your Booking</h2>
+                <p>You are about to book <strong id="modalSelectedCount">0</strong> seat(s) for a total of <strong id="modalTotalAmount">$0</strong>.</p>
+                <button class="pay-now-btn" id="confirmPaymentBtn">Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const widget = document.querySelector('.booking-widget');
+        const seatingArea = widget.querySelector('.seating-area');
+        const movieSelect = widget.querySelector('#movie');
+        const countDisplay = widget.querySelector('#count');
+        const totalDisplay = widget.querySelector('#total');
+        const proceedToPaymentBtn = widget.querySelector('#proceed-to-payment-btn');
+
+        const paymentModal = document.getElementById('paymentModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalBody = document.getElementById('modalBody');
+        const modalSelectedCount = document.getElementById('modalSelectedCount');
+        const modalTotalAmount = document.getElementById('modalTotalAmount');
+        const confirmPaymentBtn = document.getElementById('confirmPaymentBtn'); 
+
+        let ticketPrice = +movieSelect.value;
+        let selectedSeatsGlobal = []; 
+
+        const ROWS = 5;
+        const SEATS_PER_ROW = 6;
+        const preOccupiedSeats = [
+            [0, 1], [0, 2], [1, 4], [3, 0], [4, 3], [4, 4]
+        ];
+
+        function generateSeats() {
+            seatingArea.innerHTML = '';
+            for (let i = 0; i < ROWS; i++) {
+                const row = document.createElement('div');
+                row.classList.add('row');
+                for (let j = 0; j < SEATS_PER_ROW; j++) {
+                    const seat = document.createElement('div');
+                    seat.classList.add('seat');
+                    seat.dataset.row = i;
+                    seat.dataset.seat = j;
+                    if (preOccupiedSeats.some(occupied => occupied[0] === i && occupied[1] === j)) {
+                        seat.classList.add('occupied');
+                    }
+                    row.appendChild(seat);
+                }
+                seatingArea.appendChild(row);
+            }
+        }
+        generateSeats();
+        let seats = widget.querySelectorAll('.row .seat:not(.occupied)');
+
+        function populateUI() {
+            const selectedSeatsJSON = localStorage.getItem('selectedSeatsCompact');
+            if (selectedSeatsJSON) {
+                const selectedSeatsCoords = JSON.parse(selectedSeatsJSON);
+                if (selectedSeatsCoords.length > 0) {
+                    seats.forEach(seat => {
+                        const seatRow = parseInt(seat.dataset.row);
+                        const seatCol = parseInt(seat.dataset.seat);
+                        if (selectedSeatsCoords.find(s => s.row === seatRow && s.col === seatCol)) {
+                           seat.classList.add('selected');
+                        }
+                    });
+                }
+            }
+            const selectedMovieIndex = localStorage.getItem('selectedMovieIndexCompact');
+            if (selectedMovieIndex) {
+                movieSelect.selectedIndex = selectedMovieIndex;
+                ticketPrice = +movieSelect.value;
+            }
+        }
+
+        function setMovieData(movieIndex) {
+            localStorage.setItem('selectedMovieIndexCompact', movieIndex);
+        }
+
+        function updateSelectedCountAndTotal() {
+            const currentSelectedSeatsElements = widget.querySelectorAll('.row .seat.selected');
+            const selectedSeatsCount = currentSelectedSeatsElements.length;
+
+            selectedSeatsGlobal = [...currentSelectedSeatsElements].map(seat => {
+                return { row: parseInt(seat.dataset.row), col: parseInt(seat.dataset.col) };
+            });
+
+            localStorage.setItem('selectedSeatsCompact', JSON.stringify(selectedSeatsGlobal));
+
+            countDisplay.innerText = selectedSeatsCount;
+            totalDisplay.innerText = (selectedSeatsCount * ticketPrice).toFixed(2);
+            proceedToPaymentBtn.disabled = selectedSeatsCount === 0;
+            seats = widget.querySelectorAll('.row .seat:not(.occupied)'); 
+        }
+
+        function openPaymentModal() {
+            modalSelectedCount.textContent = selectedSeatsGlobal.length;
+            modalTotalAmount.textContent = '₹' + (selectedSeatsGlobal.length * ticketPrice).toFixed(2);
+            
+            modalBody.innerHTML = `
+                <h2>Confirm Your Booking</h2>
+                <p>You are about to book <strong id="modalSelectedCount">${selectedSeatsGlobal.length}</strong> seat(s) for a total of <strong id="modalTotalAmount">$${(selectedSeatsGlobal.length * ticketPrice).toFixed(2)}</strong>.</p>
+                <button class="pay-now-btn" id="confirmPaymentBtnModal">Pay Now</button>
+            `;
+            document.getElementById('confirmPaymentBtnModal').addEventListener('click', handlePaymentProcessing);
+
+            paymentModal.classList.add('show');
+        }
+
+        function closePaymentModal() {
+            paymentModal.classList.remove('show');
+        }
+
+        function handlePaymentProcessing() {
+            modalBody.innerHTML = `
+                <h2>Processing Payment...</h2>
+                <div class="spinner"></div>
+                <p>Please wait while we process your transaction.</p>
+            `;
+
+            setTimeout(() => {
+                const paymentSuccess = Math.random() > 0.3; 
+
+                if (paymentSuccess) {
+                    modalBody.innerHTML = `
+                        <h2 class="payment-success">Payment Successful!</h2>
+                        <p>Your seats have been booked. Enjoy the movie!</p>
+                        <p>A confirmation has been mock-sent to your email.</p>
+                        <button class="pay-now-btn" onclick="closePaymentModalAndReset()">Close</button>
+                    `;
+                    markSeatsAsOccupiedAndReset();
+
+                } else {
+                    modalBody.innerHTML = `
+                        <h2 class="payment-failure">Payment Failed!</h2>
+                        <p>Sorry, there was an issue with your payment. Please try again or use a different payment method.</p>
+                        <button class="pay-now-btn" onclick="closePaymentModal()">Try Again</button>
+                    `;
+                }
+            }, 2500); 
+        }
+
+        function markSeatsAsOccupiedAndReset() {
+            selectedSeatsGlobal.forEach(selSeat => {
+                preOccupiedSeats.push([selSeat.row, selSeat.col]); 
+                const seatEl = seatingArea.querySelector(`.seat[data-row="${selSeat.row}"][data-seat="${selSeat.col}"]`);
+                if (seatEl) {
+                    seatEl.classList.remove('selected');
+                    seatEl.classList.add('occupied');
+                }
+            });
+            localStorage.removeItem('selectedSeatsCompact'); 
+            selectedSeatsGlobal = [];
+            updateSelectedCountAndTotal(); 
+        }
+        
+        window.closePaymentModalAndReset = function() {
+            closePaymentModal();
+        }
+
+        movieSelect.addEventListener('change', e => {
+            ticketPrice = +e.target.value;
+            setMovieData(e.target.selectedIndex);
+            updateSelectedCountAndTotal();
+        });
+
+        seatingArea.addEventListener('click', e => {
+            if (e.target.classList.contains('seat') && !e.target.classList.contains('occupied')) {
+                e.target.classList.toggle('selected');
+                updateSelectedCountAndTotal();
+            }
+        });
+
+        proceedToPaymentBtn.addEventListener('click', () => {
+            if (selectedSeatsGlobal.length > 0) {
+                openPaymentModal();
+            } else {
+                alert("Please select at least one seat to proceed.");
+            }
+        });
+
+        closeModalBtn.addEventListener('click', closePaymentModal);
+
+        window.addEventListener('click', (event) => {
+            if (event.target === paymentModal) {
+                closePaymentModal();
+            }
+        });
+
+        populateUI();
+        updateSelectedCountAndTotal();
+    </script>
+</body>
+</html>
